@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Kemalincekara.Kriptografi
 {
@@ -70,6 +71,26 @@ namespace Kemalincekara.Kriptografi
         #endregion
 
         #region " Hibrit "
+        /// <summary>
+        /// RSA ve AES Karışımı Hibrit Kriptografi
+        /// </summary>
+        /// <param name="veri">string değerinden şifrelenecek veri</param>
+        /// <returns>Kriptolanmış veriyi string değerinde döndürür</returns>
+        public string SifreleHibrit(string veri)
+        {
+            return Convert.ToBase64String(SifreleHibrit(Encoding.UTF8.GetBytes(veri)));
+        }
+
+        /// <summary>
+        /// RSA ve AES Karışımı Hibrit Kriptografi Çözümü
+        /// </summary>
+        /// <param name="veri">string değerinden şifrelenmiş veri</param>
+        /// <returns>Kripto çözülmüş orijinal veriyi string olarak döndürür</returns>
+        public string CozumleHibrit(string veri)
+        {
+            return Encoding.UTF8.GetString(CozumleHibrit(Convert.FromBase64String(veri)));
+        }
+    
         /// <summary>
         /// RSA ve AES Karışımı Hibrit Kriptografi
         /// </summary>
