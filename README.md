@@ -22,7 +22,6 @@ string privateKey = RsaAesHybrit.Instance.ToXmlString(true);
 byte[] data = Encoding.UTF8.GetBytes("KEMAL");
 byte[] encrypted = await RsaAesHybrit.Instance.EncryptAsync(data);
 byte[] decrypted = await RsaAesHybrit.Instance.DecryptAsync(encrypted);
-byte[]
 ```
 
 - File
