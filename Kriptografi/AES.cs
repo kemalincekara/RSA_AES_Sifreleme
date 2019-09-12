@@ -96,7 +96,8 @@ namespace Kemalincekara.Kriptografi
         /// <returns></returns>
         public async Task ProcessAsync(BufferedStream sourceFile, FileStream targetFile, Cryptor cryptor)
         {
-            using (CryptoStream cs = new CryptoStream(targetFile, cryptor == Cryptor.Encrypt ? SymmetricKey.CreateEncryptor() : SymmetricKey.CreateDecryptor(), CryptoStreamMode.Write))
+            using (var createCryptor = cryptor == Cryptor.Encrypt ? SymmetricKey.CreateEncryptor() : SymmetricKey.CreateDecryptor())
+            using (CryptoStream cs = new CryptoStream(targetFile, createCryptor, CryptoStreamMode.Write))
             {
                 byte[] chunkData = new byte[FileReadChunkSize];
                 int read = 0;
@@ -116,7 +117,8 @@ namespace Kemalincekara.Kriptografi
         public async Task<byte[]> ProcessAsync(byte[] data, Cryptor cryptor)
         {
             using (var output = new MemoryStream())
-            using (CryptoStream cs = new CryptoStream(output, cryptor == Cryptor.Encrypt ? SymmetricKey.CreateEncryptor() : SymmetricKey.CreateDecryptor(), CryptoStreamMode.Write))
+            using (var createCryptor = cryptor == Cryptor.Encrypt ? SymmetricKey.CreateEncryptor() : SymmetricKey.CreateDecryptor())
+            using (CryptoStream cs = new CryptoStream(output, createCryptor, CryptoStreamMode.Write))
             {
                 await cs.WriteAsync(data, 0, data.Length);
                 if (!cs.HasFlushedFinalBlock)

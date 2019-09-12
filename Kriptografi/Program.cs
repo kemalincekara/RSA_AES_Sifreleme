@@ -31,6 +31,10 @@ namespace Kemalincekara.Kriptografi
                       () => AesTestFromFileAsync().Wait());
             }
 
+
+            PerformansProfile("Diffie-Hellman | DiffieHellmanTestAsync()", 1,
+                  () => DiffieHellmanTestAsync().Wait());
+
             Console.ReadLine();
         }
 
@@ -125,6 +129,40 @@ namespace Kemalincekara.Kriptografi
             else
                 LogLine(ConsoleColor.Red, "Yanlış.");
         }
+
+        private static async Task DiffieHellmanTestAsync()
+        {
+            using (var bob = new DiffieHellman())
+            using (var alice = new DiffieHellman())
+            {
+                bob.PrivateKey = Convert.FromBase64String("RUNLMiAAAACheb3xnuH4kjyF5ojlJKFYhU3tDHHrFRSUvKfC5yk7Lzx0itTobk2KA3p52C6fkIaERWW5ABBD7gFvwVzZgEvXoyV2WUcuxzs1QT9lEp+4D0qdCPkAFIrofxidMOvt8zU=");
+                alice.PrivateKey = Convert.FromBase64String("RUNLMiAAAAChGmwyrHnSvVXv5ZD81pDgWqcCuCf7EsIdl0kU3H7IScXTuOxYMIgThjPJhlnoPkHGPcv2P4+toOa5Y8wuhZbp14IbJscUf9X7vP1JeZi3L4dAdz1CyGc2VJ+snZXwfYA=");
+
+                bob.AesIV = Convert.FromBase64String("D9k32Lx1gvlVWdfEnQgPpH+z/kL/bv6YcRX8p0RpsHk=");
+                alice.AesIV = Convert.FromBase64String("ZJJ2GXYXMef8qea5/c6rF5To+g999FjnLDAyHR7/Rt0=");
+
+                Console.WriteLine("Bob Private Key: {0}\n", Convert.ToBase64String(bob.PrivateKey));
+                Console.WriteLine("Alice Private Key: {0}\n", Convert.ToBase64String(alice.PrivateKey));
+
+                Console.WriteLine("Bob IV: {0}\n", Convert.ToBase64String(bob.AesIV));
+                Console.WriteLine("Alice IV: {0}\n", Convert.ToBase64String(alice.AesIV));
+
+                byte[] data = Encoding.UTF8.GetBytes("{ KeMaL; }");
+
+                // Bob uses Alice's public key to encrypt his data.
+                byte[] secretData = await bob.EncryptAsync(alice.PublicKey, data);
+
+                // Alice uses Bob's public key and IV to decrypt the secret data.
+                byte[] decryptedData = await alice.DecryptAsync(bob.PublicKey, secretData, bob.AesIV);
+
+                LogAppend(ConsoleColor.White, "Hash\t\t: ");
+                if (BitConverter.ToString(MD5.Create().ComputeHash(data)) == BitConverter.ToString(MD5.Create().ComputeHash(decryptedData)))
+                    LogLine(ConsoleColor.Green, "Doğrulandı.");
+                else
+                    LogLine(ConsoleColor.Red, "Yanlış.");
+            }
+        }
+
         #endregion
 
         #region " Helper Methods "
