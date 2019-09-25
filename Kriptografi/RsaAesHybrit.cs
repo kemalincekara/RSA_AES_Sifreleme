@@ -84,8 +84,8 @@ namespace Kemalincekara.Kriptografi
             Buffer.BlockCopy(data, KeyCrypt.Length, IVCrypt, 0, IVCrypt.Length);
             Buffer.BlockCopy(data, KeyCrypt.Length + IVCrypt.Length, veriCrypt, 0, veriCrypt.Length);
 
-            byte[] Key = RSA.Decrypt(KeyCrypt);
-            byte[] IV = RSA.Decrypt(IVCrypt);
+            AES.Key = RSA.Decrypt(KeyCrypt);
+            AES.IV = RSA.Decrypt(IVCrypt);
 
             return await AES.ProcessAsync(veriCrypt, AES.Cryptor.Decrypt);
         }
